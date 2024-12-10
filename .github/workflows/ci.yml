@@ -16,6 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Give gradlew execute permission
+        run: chmod +x ./gradlew
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -35,8 +38,8 @@ jobs:
       - name: Build application
         run: ./gradlew build
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Run tests and generate JaCoCo report
+        run: ./gradlew test jacocoTestReport
 
       - name: Upload test results
         if: always()
@@ -44,3 +47,10 @@ jobs:
         with:
           name: test-results
           path: build/reports/tests/test
+
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-coverage-report
+          path: build/reports/jacoco/test/html
